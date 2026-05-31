@@ -562,3 +562,44 @@ input, textarea, select, button { font-family: var(--font); }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ===== DUAL API SETUP ===== */
+.api-option-box {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 8px;
+  text-align: left;
+  transition: border-color 0.2s;
+}
+.paid-box { border-color: rgba(92,78,232,0.3); background: var(--accent-light); }
+.free-box { border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.05); }
+
+.api-option-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.api-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.api-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.paid-badge { background: var(--accent); color: white; }
+.free-badge { background: #16a34a; color: white; }
+.api-desc { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+
+.key-input {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px; outline: none;
+  margin-top: 4px;
+  transition: border-color 0.2s;
+}
+.key-input:focus { border-color: var(--accent); }
+
+.api-divider-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  padding: 8px 0;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}

@@ -160,13 +160,28 @@
     <div id="api-setup" class="api-setup">
       <div class="setup-card">
         <div class="setup-icon">🔑</div>
-        <h3>Pehle API key daalo</h3>
-        <p>Anthropic ki free API key lo: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
-        <div class="api-input-row">
-          <input type="password" id="api-key-field" placeholder="sk-ant-api03-..." />
-          <button onclick="saveApiKey()">Save</button>
+        <h3>API Key daalo</h3>
+        <p>Ek ya dono keys daalo — Anthropic hogi to woh use hogi, nahi to Groq (Free) use hoga!</p>
+        <div class="api-option-box paid-box">
+          <div class="api-option-header">
+            <span class="api-badge paid-badge">⚡ Best Quality</span>
+            <span class="api-name">Anthropic (Claude AI)</span>
+          </div>
+          <p class="api-desc">Paid &mdash; <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+          <input type="password" id="api-key-field" placeholder="sk-ant-api03-..." class="key-input" />
         </div>
-        <p class="api-note">🔒 Key sirf tumhare browser mein save hoti hai — koi server nahi jaati</p>
+        <div class="api-divider-text">— YA —</div>
+        <div class="api-option-box free-box">
+          <div class="api-option-header">
+            <span class="api-badge free-badge">✅ Bilkul Free</span>
+            <span class="api-name">Groq (Llama 3)</span>
+          </div>
+          <p class="api-desc">Free &mdash; <a href="https://console.groq.com" target="_blank">console.groq.com</a></p>
+          <input type="password" id="groq-key-field" placeholder="gsk_..." class="key-input" />
+        </div>
+        <button class="primary-btn" style="margin-top:20px" onclick="saveApiKey()">Save karo &amp; Shuru karo 🚀</button>
+        <p class="api-note">🔒 Keys sirf tumhare browser mein save hoti hain</p>
+        <p id="api-status" style="font-size:13px;margin-top:8px;text-align:center;color:var(--accent)"></p>
       </div>
     </div>
 
@@ -273,8 +288,12 @@
     <div class="form-group"><label>Naam</label><input type="text" id="profile-name" /></div>
     <div class="form-group"><label>Email</label><input type="email" id="profile-email" readonly /></div>
     <div class="form-group">
-      <label>API Key (optional — apni key use karo)</label>
+      <label>Anthropic API Key</label>
       <input type="password" id="profile-api-key" placeholder="sk-ant-..." />
+    </div>
+    <div class="form-group">
+      <label>Groq API Key (Free)</label>
+      <input type="password" id="profile-groq-key" placeholder="gsk_..." />
     </div>
     <button class="primary-btn" onclick="saveProfile()">Save karo</button>
   </div>
@@ -283,3 +302,4 @@
 <script src="js/app.js"></script>
 </body>
 </html>
+

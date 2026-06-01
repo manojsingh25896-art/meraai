@@ -1,10 +1,6 @@
 {
-  "functions": {
-    "api/chat.js": {
-      "runtime": "edge"
-    },
-    "api/image.js": {
-      "runtime": "edge"
-    }
-  }
+  "rewrites": [
+    { "source": "/api/chat", "destination": "/api/chat.js" },
+    { "source": "/api/image", "destination": "/api/image.js" }
+  ]
 }

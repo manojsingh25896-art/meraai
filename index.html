@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Mera AI — Apna AI Assistant</title>
+<title>Mera AI — Smart Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,104 +13,66 @@
 <!-- LOGIN PAGE -->
 <div id="login-page" class="page active">
   <div class="auth-bg">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
+    <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
   </div>
   <div class="auth-card">
-    <div class="brand-logo">
-      <div class="brand-icon">
-        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/>
-          <path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="14" cy="17" r="2.5" fill="white"/>
-        </svg>
-      </div>
-      <span>Mera AI</span>
-    </div>
-    <h1>Namaskar! 🙏</h1>
-    <p class="auth-sub">Free mein AI se baat karo — koi setup nahi</p>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="login-email" placeholder="tumhara@email.com" autocomplete="email"/>
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
-    </div>
+    <div class="brand-logo"><div class="brand-icon"><svg width="22" height="22" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/><path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="17" r="2.5" fill="white"/></svg></div><span>Mera AI</span></div>
+    <h1>Welcome Back! 👋</h1>
+    <p class="auth-sub">India ka smartest free AI assistant</p>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="tumhara@email.com" autocomplete="email"/></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
     <button class="btn-primary" onclick="emailLogin()">Login karo</button>
-    <p class="auth-switch">Account nahi hai? <a onclick="showPage('signup-page')">Register karo — Free!</a></p>
+    <p class="auth-switch">Naya account? <a onclick="showPage('signup-page')">Free Register karo 🚀</a></p>
   </div>
 </div>
 
 <!-- SIGNUP PAGE -->
 <div id="signup-page" class="page">
-  <div class="auth-bg">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-  </div>
+  <div class="auth-bg"><div class="orb orb1"></div><div class="orb orb2"></div></div>
   <div class="auth-card">
-    <div class="brand-logo">
-      <div class="brand-icon">
-        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/>
-          <path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="14" cy="17" r="2.5" fill="white"/>
-        </svg>
-      </div>
-      <span>Mera AI</span>
-    </div>
-    <h1>Account Banao</h1>
-    <p class="auth-sub">Bilkul free — koi credit card nahi chahiye</p>
-    <div class="form-group">
-      <label>Tumhara Naam</label>
-      <input type="text" id="signup-name" placeholder="Jaise: Rahul" autocomplete="name"/>
-    </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="signup-email" placeholder="tumhara@email.com" autocomplete="email"/>
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="signup-pass" placeholder="6+ characters" autocomplete="new-password"/>
-    </div>
-    <button class="btn-primary" onclick="doSignup()">Free Account Banao 🚀</button>
+    <div class="brand-logo"><div class="brand-icon"><svg width="22" height="22" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/><path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="17" r="2.5" fill="white"/></svg></div><span>Mera AI</span></div>
+    <h1>Free Account Banao</h1>
+    <p class="auth-sub">Koi credit card nahi chahiye — 100% free shuru karo</p>
+    <div class="form-group"><label>Naam</label><input type="text" id="signup-name" placeholder="Tumhara naam" autocomplete="name"/></div>
+    <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="tumhara@email.com" autocomplete="email"/></div>
+    <div class="form-group"><label>Password</label><input type="password" id="signup-pass" placeholder="6+ characters" autocomplete="new-password"/></div>
+    <button class="btn-primary" onclick="doSignup()">Account Banao — Free! 🎉</button>
     <p class="auth-switch">Already account hai? <a onclick="showPage('login-page')">Login karo</a></p>
   </div>
 </div>
 
 <!-- MAIN APP -->
 <div id="main-app" class="page">
-
-  <!-- SIDEBAR OVERLAY (mobile) -->
   <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
   <!-- SIDEBAR -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-head">
-      <div class="brand-logo small">
-        <div class="brand-icon">
-          <svg width="16" height="16" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/>
-            <path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="14" cy="17" r="2.5" fill="white"/>
-          </svg>
-        </div>
-        <span>Mera AI</span>
-      </div>
+      <div class="brand-logo small"><div class="brand-icon small"><svg width="14" height="14" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="white" stroke-width="2"/><path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="17" r="2.5" fill="white"/></svg></div><span>Mera AI</span></div>
       <button class="icon-btn" onclick="closeSidebar()">✕</button>
     </div>
 
     <button class="new-chat-btn" onclick="newChat()">+ Naya Chat</button>
 
-    <!-- Language Selector -->
+    <!-- Mode Selector -->
+    <div class="mode-section">
+      <div class="section-label">⚡ Mode</div>
+      <div class="mode-grid">
+        <button class="mode-btn active" id="mode-chat" onclick="setMode('chat')">💬 Chat</button>
+        <button class="mode-btn" id="mode-image" onclick="setMode('image')">🎨 Image</button>
+        <button class="mode-btn" id="mode-code" onclick="setMode('code')">💻 Code</button>
+        <button class="mode-btn" id="mode-pdf" onclick="setMode('pdf')">📄 PDF</button>
+      </div>
+    </div>
+
+    <!-- Language -->
     <div class="lang-section">
       <div class="section-label">🌐 Bhasha</div>
       <select id="lang-select" class="lang-select" onchange="changeLang()">
         <option value="hinglish">🇮🇳 Hinglish</option>
         <option value="hindi">🇮🇳 Hindi</option>
         <option value="english">🇬🇧 English</option>
-        <option value="bengali">🇧🇩 Bengali</option>
+        <option value="bengali">Bengali</option>
         <option value="tamil">Tamil</option>
         <option value="telugu">Telugu</option>
         <option value="marathi">Marathi</option>
@@ -122,6 +84,11 @@
     <div id="chat-list" class="chat-list"></div>
 
     <div class="sidebar-footer">
+      <!-- Plan Badge -->
+      <div class="plan-row" id="plan-row" onclick="showPlans()">
+        <span id="plan-badge" class="plan-badge free">Free Plan</span>
+        <span class="upgrade-hint">Upgrade →</span>
+      </div>
       <div class="user-row" onclick="showProfile()">
         <div class="user-av" id="sidebar-av">U</div>
         <div class="user-meta">
@@ -133,81 +100,129 @@
     </div>
   </aside>
 
-  <!-- MAIN CHAT AREA -->
+  <!-- MAIN AREA -->
   <main class="chat-area">
-
-    <!-- TOP BAR -->
+    <!-- TOPBAR -->
     <div class="topbar">
       <button class="icon-btn" onclick="openSidebar()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
-      <div class="topbar-title">
-        <div class="brand-icon mini">
-          <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="11" stroke="white" stroke-width="2"/>
-            <path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="14" cy="17" r="2.5" fill="white"/>
-          </svg>
-        </div>
-        <span>Mera AI</span>
+      <div class="topbar-center">
+        <span id="mode-label">💬 Chat Mode</span>
       </div>
       <div class="topbar-right">
-        <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Theme">
-          <svg id="theme-svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M2 9a7 7 0 0 1 9.95-6.37A5 5 0 1 0 9.95 15.37 7 7 0 0 1 2 9z" fill="currentColor"/>
-          </svg>
+        <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">
+          <svg id="theme-svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9a7 7 0 0 1 9.95-6.37A5 5 0 1 0 9.95 15.37 7 7 0 0 1 2 9z" fill="currentColor"/></svg>
         </button>
-        <button class="icon-btn" onclick="clearChat()" title="Clear">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M3 5h12l-1 10H4L3 5zM6 5V3h6v2M1 5h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <button class="icon-btn" onclick="clearChat()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5h12l-1 10H4L3 5zM6 5V3h6v2M1 5h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
     </div>
 
     <!-- MESSAGES -->
-    <div id="messages" class="messages">
-      <!-- Welcome shown by JS -->
+    <div id="messages" class="messages"></div>
+
+    <!-- PDF UPLOAD AREA -->
+    <div id="pdf-area" class="pdf-area" style="display:none">
+      <label class="pdf-upload" for="pdf-input">
+        <span>📄 PDF yahan drop karo ya click karo</span>
+        <input type="file" id="pdf-input" accept=".pdf" onchange="handlePDF(this)" style="display:none"/>
+      </label>
+      <div id="pdf-status" class="pdf-status"></div>
     </div>
 
-    <!-- INPUT AREA -->
-    <div class="input-zone">
+    <!-- CODE EDITOR -->
+    <div id="code-area" class="code-area" style="display:none">
+      <div class="code-toolbar">
+        <select id="code-lang" class="code-lang-select">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="html">HTML</option>
+          <option value="css">CSS</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+        </select>
+        <button class="code-btn" onclick="explainCode()">💡 Explain karo</button>
+        <button class="code-btn" onclick="fixCode()">🔧 Fix karo</button>
+        <button class="code-btn" onclick="improveCode()">⚡ Improve karo</button>
+      </div>
+      <textarea id="code-editor" class="code-editor" placeholder="Yahan code paste karo..."></textarea>
+    </div>
+
+    <!-- INPUT ZONE -->
+    <div class="input-zone" id="input-zone">
       <div class="input-box" id="input-box">
-        <textarea id="msg-input"
-          placeholder="Kuch bhi poochho..."
-          rows="1"
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this)"></textarea>
-        <button class="img-btn" id="img-mode-btn" onclick="toggleImageMode()" title="Image banao">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.3"/>
-            <circle cx="5.5" cy="5.5" r="1.5" fill="currentColor"/>
-            <path d="M1 11l4-4 3 3 2-2 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <!-- Voice Button -->
+        <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="9" rx="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 8a6 6 0 0 0 12 0M8 14v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         </button>
+        <textarea id="msg-input" placeholder="Kuch bhi poochho..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
         <button class="send-btn" id="send-btn" onclick="sendMsg()">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M2 16L16 9 2 2v5l10 2-10 2v5z" fill="currentColor"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 16L16 9 2 2v5l10 2-10 2v5z" fill="currentColor"/></svg>
         </button>
       </div>
       <div class="input-hint">
-        <span id="lang-hint">🌐 Hinglish</span>
-        <span>Enter = Send &nbsp;•&nbsp; Shift+Enter = Naya line</span>
+        <span id="lang-hint">🇮🇳 Hinglish</span>
+        <span id="mode-hint">💬 Chat</span>
       </div>
     </div>
   </main>
 </div>
 
+<!-- PLANS MODAL -->
+<div id="plans-modal" class="modal-bg" style="display:none" onclick="closePlans()">
+  <div class="modal-box wide" onclick="event.stopPropagation()">
+    <div class="modal-head"><h2>Plan Choose Karo 💎</h2><button class="icon-btn" onclick="closePlans()">✕</button></div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">₹0<span>/mahina</span></div>
+        <ul class="plan-features">
+          <li>✅ 30 messages/din</li>
+          <li>✅ Chat + Image + Code</li>
+          <li>✅ 8 languages</li>
+          <li>❌ PDF upload</li>
+          <li>❌ Voice output</li>
+          <li>❌ Priority speed</li>
+        </ul>
+        <button class="plan-btn current-btn" disabled>Current Plan</button>
+      </div>
+      <div class="plan-card popular">
+        <div class="popular-tag">🔥 Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">₹199<span>/mahina</span></div>
+        <ul class="plan-features">
+          <li>✅ Unlimited messages</li>
+          <li>✅ PDF upload + analysis</li>
+          <li>✅ Voice input + output</li>
+          <li>✅ Priority speed</li>
+          <li>✅ Better image quality</li>
+          <li>✅ Chat history forever</li>
+        </ul>
+        <button class="plan-btn upgrade-btn" onclick="buyPlan('pro', 199)">Pro Lo — ₹199 🚀</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">₹499<span>/mahina</span></div>
+        <ul class="plan-features">
+          <li>✅ Sab Pro features</li>
+          <li>✅ 5 team members</li>
+          <li>✅ Custom AI personality</li>
+          <li>✅ API access</li>
+          <li>✅ Priority support</li>
+          <li>✅ Analytics dashboard</li>
+        </ul>
+        <button class="plan-btn upgrade-btn" onclick="buyPlan('business', 499)">Business Lo — ₹499</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PROFILE MODAL -->
 <div id="profile-modal" class="modal-bg" style="display:none" onclick="closeProfile()">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <h2>Profile</h2>
-      <button class="icon-btn" onclick="closeProfile()">✕</button>
-    </div>
+    <div class="modal-head"><h2>Profile ✏️</h2><button class="icon-btn" onclick="closeProfile()">✕</button></div>
     <div class="profile-av" id="profile-av-big">U</div>
     <div class="form-group"><label>Naam</label><input type="text" id="p-name"/></div>
     <div class="form-group"><label>Email</label><input type="email" id="p-email" readonly/></div>
@@ -215,6 +230,8 @@
   </div>
 </div>
 
+<!-- RAZORPAY -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

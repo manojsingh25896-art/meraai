@@ -9,14 +9,11 @@ export default async function handler(req) {
   };
 
   if (req.method === 'OPTIONS') return new Response(null, { status: 200, headers });
-  if (req.method !== 'POST') return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers });
 
   try {
     const { messages, userName, language } = await req.json();
-    if (!messages) return new Response(JSON.stringify({ error: 'Messages required' }), { status: 400, headers });
-
     const groqKey = process.env.GROQ_API_KEY;
-    if (!groqKey) return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500, headers });
+    if (!groqKey) return new Response(JSON.stringify({ error: 'GROQ key missing' }), { status: 500, headers });
 
     const langPrompt = {
       hindi: 'Hamesha sirf Hindi mein jawab do.',
@@ -29,30 +26,23 @@ export default async function handler(req) {
       gujarati: 'હંમેશા ગુજરાતીમાં જવાબ આપો.',
     };
 
-    const systemPrompt = `Tum ek helpful AI assistant ho jiska naam "Mera AI" hai. ${userName ? `User ka naam ${userName} hai.` : ''} ${langPrompt[language] || langPrompt['hinglish']} Friendly aur helpful raho.`;
+    const sys = `Tum ek helpful AI assistant ho — "Mera AI". ${userName ? `User: ${userName}.` : ''} ${langPrompt[language] || langPrompt.hinglish} Friendly raho.`;
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqKey}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         max_tokens: 1024,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages
-        ]
+        messages: [{ role: 'system', content: sys }, ...messages]
       })
     });
 
-    const data = await response.json();
+    const data = await resp.json();
     if (data.error) return new Response(JSON.stringify({ error: data.error.message }), { status: 500, headers });
-    const reply = data.choices?.[0]?.message?.content || 'Kuch galat hua.';
-    return new Response(JSON.stringify({ reply }), { status: 200, headers });
+    return new Response(JSON.stringify({ reply: data.choices[0].message.content }), { status: 200, headers });
 
-  } catch (err) {
-    return new Response(JSON.stringify({ error: 'Server error: ' + err.message }), { status: 500, headers });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
   }
 }

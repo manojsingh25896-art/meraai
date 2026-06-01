@@ -1,67 +1,54 @@
 // ===== STATE =====
 let currentUser = null;
-let anthropicKey = '';
-let groqKey = '';
 let messages = [];
 let allChats = [];
 let currentChatId = null;
-let selectedModel = 'claude-sonnet-4-20250514';
+let currentLang = 'hinglish';
 let isTyping = false;
-let msgCount = 0;
-const FREE_LIMIT = 20;
 
 // ===== INIT =====
 window.onload = () => {
   const saved = localStorage.getItem('meraai_user');
   if (saved) {
     currentUser = JSON.parse(saved);
-    anthropicKey = localStorage.getItem('meraai_anthropic_key') || '';
-    groqKey = localStorage.getItem('meraai_groq_key') || '';
     loadApp();
   } else {
     showPage('login-page');
   }
-  const theme = localStorage.getItem('meraai_theme') || 'light';
-  setTheme(theme);
+  const theme = localStorage.getItem('meraai_theme') || 'dark';
+  applyTheme(theme);
 };
 
 // ===== PAGES =====
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
+  document.getElementById(id).classList.add('active');
 }
-function showSignup() { showPage('signup-page'); }
-function showLogin() { showPage('login-page'); }
 
 // ===== AUTH =====
-function googleLogin() { createSession('Google User', 'user@gmail.com'); }
-
 function emailLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-pass').value;
-  if (!email || !pass) { showToast('Email aur password dono daalo!'); return; }
+  if (!email || !pass) { toast('Email aur password daalo!'); return; }
   const users = JSON.parse(localStorage.getItem('meraai_users') || '{}');
-  if (!users[email]) { showToast('Account nahi mila. Pehle register karo.'); return; }
-  if (users[email].pass !== btoa(pass)) { showToast('Password galat hai!'); return; }
-  createSession(users[email].name, email);
+  if (!users[email]) { toast('Account nahi mila — pehle register karo'); return; }
+  if (users[email].pass !== btoa(pass)) { toast('Password galat hai!'); return; }
+  currentUser = { name: users[email].name, email };
+  localStorage.setItem('meraai_user', JSON.stringify(currentUser));
+  loadApp();
 }
 
 function doSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pass = document.getElementById('signup-pass').value;
-  if (!name || !email || !pass) { showToast('Sab fields bharo!'); return; }
-  if (pass.length < 6) { showToast('Password 6+ characters ka hona chahiye'); return; }
+  if (!name || !email || !pass) { toast('Sab fields bharo!'); return; }
+  if (pass.length < 6) { toast('Password 6+ characters ka hona chahiye'); return; }
   const users = JSON.parse(localStorage.getItem('meraai_users') || '{}');
-  if (users[email]) { showToast('Is email se already account hai!'); return; }
+  if (users[email]) { toast('Is email se pehle se account hai!'); return; }
   users[email] = { name, pass: btoa(pass) };
   localStorage.setItem('meraai_users', JSON.stringify(users));
-  createSession(name, email);
-}
-
-function createSession(name, email) {
-  currentUser = { name, email, plan: 'free', joinDate: new Date().toISOString() };
+  currentUser = { name, email };
   localStorage.setItem('meraai_user', JSON.stringify(currentUser));
   loadApp();
 }
@@ -70,237 +57,168 @@ function logout() {
   localStorage.removeItem('meraai_user');
   currentUser = null; messages = []; allChats = [];
   showPage('login-page');
-  showToast('Logout ho gaye!');
 }
 
 // ===== LOAD APP =====
 function loadApp() {
   showPage('main-app');
-  document.getElementById('user-name-display').textContent = currentUser.name;
-  document.getElementById('user-email-display').textContent = currentUser.email;
-  document.getElementById('user-avatar').textContent = currentUser.name[0].toUpperCase();
-  document.getElementById('plan-text').textContent = 'Free Plan';
-
-  allChats = JSON.parse(localStorage.getItem(`meraai_chats_${currentUser.email}`) || '[]');
+  document.getElementById('sidebar-av').textContent = currentUser.name[0].toUpperCase();
+  document.getElementById('sidebar-name').textContent = currentUser.name;
+  document.getElementById('sidebar-email').textContent = currentUser.email;
+  allChats = JSON.parse(localStorage.getItem('meraai_chats_' + currentUser.email) || '[]');
   renderChatList();
-  msgCount = parseInt(localStorage.getItem(`meraai_msgcount_${today()}`) || '0');
-
-  if (anthropicKey || groqKey) {
-    showChatUI();
-    startNewChat();
-  } else {
-    showApiSetup();
-  }
+  showWelcome();
 }
 
-// ===== API SETUP =====
-function showApiSetup() {
-  document.getElementById('api-setup').style.display = 'flex';
-  document.getElementById('welcome-screen').style.display = 'none';
-  document.getElementById('messages').style.display = 'none';
-  document.getElementById('input-area').style.display = 'none';
+// ===== WELCOME =====
+function showWelcome() {
+  const msgsEl = document.getElementById('messages');
+  msgsEl.innerHTML = `
+    <div class="welcome">
+      <div class="welcome-icon">🤖</div>
+      <h2>Namaskar, ${currentUser.name.split(' ')[0]}! 👋</h2>
+      <p>Main tumhara AI assistant hoon — koi bhi sawaal poochho,<br>kisi bhi bhasha mein!</p>
+      <div class="chips">
+        <button class="chip" onclick="quickSend('Mujhe ek funny joke sunao')">😂 Joke sunao</button>
+        <button class="chip" onclick="quickSend('Python programming sikhao mujhe')">🐍 Python sikhao</button>
+        <button class="chip" onclick="quickSend('Mere liye ek motivational quote do')">💪 Motivation do</button>
+        <button class="chip" onclick="quickSend('Business idea do jo ghar se shuru ho sake')">💡 Business idea</button>
+        <button class="chip" onclick="quickSend('English bolna sikhao mujhe')">🗣️ English sikhao</button>
+        <button class="chip" onclick="quickSend('Aaj ka mausam kaisa hoga Delhi mein?')">🌤️ Mausam</button>
+      </div>
+    </div>`;
+  messages = [];
+  currentChatId = Date.now().toString();
 }
 
-function showChatUI() {
-  document.getElementById('api-setup').style.display = 'none';
-  document.getElementById('welcome-screen').style.display = 'flex';
-  document.getElementById('messages').style.display = 'none';
-  document.getElementById('input-area').style.display = 'block';
-  document.getElementById('welcome-name').textContent = `Namaskar, ${currentUser.name.split(' ')[0]}! 👋`;
-  updateMsgCountDisplay();
-  updateApiStatus();
-}
-
-function saveApiKey() {
-  const aKey = document.getElementById('api-key-field').value.trim();
-  const gKey = document.getElementById('groq-key-field').value.trim();
-
-  if (!aKey && !gKey) { showToast('Kam se kam ek key daalo!'); return; }
-
-  if (aKey) {
-    if (!aKey.startsWith('sk-')) { showToast('Anthropic key galat hai! sk- se shuroo hoti hai'); return; }
-    anthropicKey = aKey;
-    localStorage.setItem('meraai_anthropic_key', aKey);
-  }
-  if (gKey) {
-    if (!gKey.startsWith('gsk_')) { showToast('Groq key galat hai! gsk_ se shuroo hoti hai'); return; }
-    groqKey = gKey;
-    localStorage.setItem('meraai_groq_key', gKey);
-  }
-
-  showToast('Key save ho gayi! 🎉');
-  showChatUI();
-  startNewChat();
-}
-
-function updateApiStatus() {
-  const statusEl = document.getElementById('api-status');
-  if (!statusEl) return;
-  if (anthropicKey && groqKey) {
-    statusEl.textContent = '✅ Anthropic + Groq dono active (Anthropic priority)';
-    statusEl.style.color = 'var(--accent)';
-  } else if (anthropicKey) {
-    statusEl.textContent = '✅ Anthropic API active';
-    statusEl.style.color = 'var(--accent)';
-  } else if (groqKey) {
-    statusEl.textContent = '✅ Groq API active (Free)';
-    statusEl.style.color = '#16a34a';
-  }
-}
-
-// ===== WHICH API TO USE =====
-function getActiveApi() {
-  if (anthropicKey) return 'anthropic';
-  if (groqKey) return 'groq';
-  return null;
+function quickSend(text) {
+  document.getElementById('msg-input').value = text;
+  sendMsg();
 }
 
 // ===== SEND MESSAGE =====
 async function sendMsg() {
-  const activeApi = getActiveApi();
-  if (!activeApi) { showToast('Pehle API key daalo!'); showApiSetup(); return; }
   if (isTyping) return;
-
-  const plan = currentUser.plan || 'free';
-  if (plan === 'free' && msgCount >= FREE_LIMIT) {
-    showToast('Free limit khatam! Pro plan lo unlimited ke liye.');
-    showUpgrade(); return;
-  }
-
   const input = document.getElementById('msg-input');
   const text = input.value.trim();
   if (!text) return;
 
+  // Image mode
+  if (imageMode) {
+    input.value = '';
+    input.style.height = 'auto';
+    const msgsEl = document.getElementById('messages');
+    if (msgsEl.querySelector('.welcome')) msgsEl.innerHTML = '';
+    await generateImage(text);
+    return;
+  }
+
   input.value = '';
   input.style.height = 'auto';
-  document.getElementById('char-count').textContent = '';
 
-  document.getElementById('welcome-screen').style.display = 'none';
+  // Clear welcome if showing
   const msgsEl = document.getElementById('messages');
-  msgsEl.style.display = 'flex';
+  if (msgsEl.querySelector('.welcome')) msgsEl.innerHTML = '';
 
   appendBubble('user', text);
   messages.push({ role: 'user', content: text });
-  if (messages.length === 1) saveCurrentChat(text);
+  if (messages.length === 1) saveChat(text);
 
   isTyping = true;
   document.getElementById('send-btn').disabled = true;
-  const typingEl = showTyping();
+  const typEl = showTyping();
 
   try {
-    let reply = '';
-    if (activeApi === 'anthropic') {
-      reply = await callAnthropic();
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages,
+        userName: currentUser.name,
+        language: currentLang
+      })
+    });
+
+    const data = await res.json();
+    typEl.remove();
+
+    if (data.error) {
+      appendBubble('ai', '❌ Error: ' + data.error);
     } else {
-      reply = await callGroq();
+      messages.push({ role: 'assistant', content: data.reply });
+      appendBubble('ai', data.reply);
+      saveChat(messages[0].content);
     }
-    typingEl.remove();
-    messages.push({ role: 'assistant', content: reply });
-    appendBubble('ai', reply);
-    saveCurrentChat(messages[0].content);
-    msgCount++;
-    localStorage.setItem(`meraai_msgcount_${today()}`, msgCount);
-    updateMsgCountDisplay();
   } catch (e) {
-    typingEl.remove();
-    // Anthropic fail hua to Groq try karo
-    if (activeApi === 'anthropic' && groqKey) {
-      showToast('Anthropic error! Groq se try kar raha hoon...');
-      try {
-        const reply = await callGroq();
-        messages.push({ role: 'assistant', content: reply });
-        appendBubble('ai', reply + '\n\n_(Groq AI ne jawab diya)_');
-        saveCurrentChat(messages[0].content);
-      } catch (e2) {
-        appendBubble('ai', '❌ Dono APIs mein error! Keys check karo.');
-      }
-    } else {
-      appendBubble('ai', '❌ Error aaya! API key aur internet check karo.');
-    }
+    typEl.remove();
+    appendBubble('ai', '❌ Server se connect nahi hua. Thodi der baad try karo.');
   }
 
   isTyping = false;
   document.getElementById('send-btn').disabled = false;
 }
 
-// ===== ANTHROPIC API =====
-async function callAnthropic() {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': anthropicKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: selectedModel,
-      max_tokens: 1000,
-      system: `Tum ek helpful AI assistant ho jiska naam "Mera AI" hai. User ka naam ${currentUser.name} hai. Hinglish mein baat karo. Friendly aur helpful raho.`,
-      messages
-    })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.content?.[0]?.text || 'Kuch galat hua.';
+// ===== UI HELPERS =====
+function appendBubble(role, text) {
+  const msgsEl = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const av = role === 'user' ? currentUser.name[0].toUpperCase() : 'AI';
+  const time = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
+  div.innerHTML = `
+    <div class="msg-av">${av}</div>
+    <div>
+      <div class="bubble">${escHtml(text)}</div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  msgsEl.appendChild(div);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
 }
 
-// ===== GROQ API =====
-async function callGroq() {
-  const groqMessages = [
-    { role: 'system', content: `Tum ek helpful AI assistant ho jiska naam "Mera AI" hai. User ka naam ${currentUser.name} hai. Hinglish mein baat karo. Friendly aur helpful raho.` },
-    ...messages
-  ];
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${groqKey}`
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 1000,
-      messages: groqMessages
-    })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content || 'Kuch galat hua.';
+function showTyping() {
+  const msgsEl = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'typing-row';
+  div.innerHTML = `<div class="msg-av" style="width:28px;height:28px;border-radius:50%;background:var(--accent-bg);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">AI</div><div class="typing-bub"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  msgsEl.appendChild(div);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  return div;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
 // ===== CHAT MANAGEMENT =====
-function startNewChat() {
-  currentChatId = Date.now().toString();
-  messages = [];
-  document.getElementById('messages').innerHTML = '';
-  document.getElementById('messages').style.display = 'none';
-  document.getElementById('welcome-screen').style.display = 'flex';
-  document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
-}
-
 function newChat() {
-  startNewChat();
-  if (window.innerWidth <= 768) closeMobileSidebar();
+  showWelcome();
+  renderChatList();
+  closeSidebar();
 }
 
-function saveCurrentChat(firstMsg) {
-  if (!currentChatId) return;
-  const existing = allChats.findIndex(c => c.id === currentChatId);
-  const chatData = { id: currentChatId, title: firstMsg.slice(0, 40) + (firstMsg.length > 40 ? '...' : ''), messages, updatedAt: Date.now() };
-  if (existing >= 0) allChats[existing] = chatData;
-  else allChats.unshift(chatData);
-  localStorage.setItem(`meraai_chats_${currentUser.email}`, JSON.stringify(allChats.slice(0, 50)));
+function saveChat(firstMsg) {
+  const title = firstMsg.slice(0, 38) + (firstMsg.length > 38 ? '...' : '');
+  const idx = allChats.findIndex(c => c.id === currentChatId);
+  const chat = { id: currentChatId, title, messages, updatedAt: Date.now() };
+  if (idx >= 0) allChats[idx] = chat;
+  else allChats.unshift(chat);
+  localStorage.setItem('meraai_chats_' + currentUser.email, JSON.stringify(allChats.slice(0, 40)));
   renderChatList();
 }
 
 function renderChatList() {
   const list = document.getElementById('chat-list');
   list.innerHTML = '';
-  allChats.slice(0, 20).forEach(chat => {
+  allChats.slice(0, 20).forEach(c => {
     const el = document.createElement('div');
-    el.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '');
-    el.innerHTML = `<span class="chat-item-icon">💬</span><span style="overflow:hidden;text-overflow:ellipsis">${chat.title}</span>`;
-    el.onclick = () => loadChat(chat.id);
+    el.className = 'chat-item' + (c.id === currentChatId ? ' active' : '');
+    el.textContent = c.title;
+    el.onclick = () => loadChat(c.id);
     list.appendChild(el);
   });
 }
@@ -312,143 +230,154 @@ function loadChat(id) {
   messages = chat.messages || [];
   const msgsEl = document.getElementById('messages');
   msgsEl.innerHTML = '';
-  document.getElementById('welcome-screen').style.display = 'none';
-  msgsEl.style.display = 'flex';
-  messages.forEach(m => appendBubble(m.role === 'user' ? 'user' : 'ai', m.content, false));
+  messages.forEach(m => appendBubble(m.role === 'user' ? 'user' : 'ai', m.content));
   msgsEl.scrollTop = msgsEl.scrollHeight;
   renderChatList();
-  if (window.innerWidth <= 768) closeMobileSidebar();
-}
-
-// ===== UI HELPERS =====
-function appendBubble(role, text, animate = true) {
-  const msgsEl = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = 'msg ' + role;
-  if (!animate) row.style.animation = 'none';
-  const initials = role === 'user' ? currentUser.name[0].toUpperCase() : 'AI';
-  const time = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-  row.innerHTML = `<div class="msg-avatar">${initials}</div><div class="msg-content"><div class="msg-bubble">${escapeHtml(text)}</div><div class="msg-time">${time}</div></div>`;
-  msgsEl.appendChild(row);
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-}
-
-function showTyping() {
-  const msgsEl = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = 'typing-row';
-  row.innerHTML = `<div class="msg-avatar" style="background:var(--accent-light);color:var(--accent);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">AI</div><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-  msgsEl.appendChild(row);
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-  return row;
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
-  const len = el.value.length;
-  document.getElementById('char-count').textContent = len > 100 ? len : '';
-}
-
-function useSuggestion(text) {
-  document.getElementById('msg-input').value = text;
-  sendMsg();
+  closeSidebar();
 }
 
 function clearChat() {
-  if (!confirm('Chat saaf karein?')) return;
-  messages = [];
-  document.getElementById('messages').innerHTML = '';
-  document.getElementById('messages').style.display = 'none';
-  document.getElementById('welcome-screen').style.display = 'flex';
+  showWelcome();
+  toast('Chat saaf ho gaya!');
 }
 
-function changeModel() {
-  selectedModel = document.getElementById('model-select').value;
-  showToast(`Model: ${selectedModel.includes('haiku') ? 'Claude Haiku' : 'Claude Sonnet 4'}`);
+// ===== LANGUAGE =====
+function changeLang() {
+  currentLang = document.getElementById('lang-select').value;
+  const labels = {
+    hinglish: '🇮🇳 Hinglish', hindi: '🇮🇳 Hindi', english: '🇬🇧 English',
+    bengali: '🇧🇩 Bengali', tamil: 'Tamil', telugu: 'Telugu',
+    marathi: 'Marathi', gujarati: 'Gujarati'
+  };
+  document.getElementById('lang-hint').textContent = '🌐 ' + (labels[currentLang] || currentLang);
+  toast('Bhasha: ' + (labels[currentLang] || currentLang));
 }
 
 // ===== SIDEBAR =====
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  if (window.innerWidth <= 768) sidebar.classList.toggle('mobile-open');
-  else sidebar.classList.toggle('collapsed');
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('show');
 }
-function closeMobileSidebar() {
-  document.getElementById('sidebar').classList.remove('mobile-open');
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
 // ===== THEME =====
 function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme');
-  setTheme(current === 'dark' ? 'light' : 'dark');
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
-function setTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('meraai_theme', theme);
-  const icon = document.getElementById('theme-icon');
-  if (icon) {
-    icon.innerHTML = theme === 'dark'
-      ? '<path d="M2 9a7 7 0 0 1 9.95-6.37A5 5 0 1 0 9.95 15.37 7 7 0 0 1 2 9z" fill="currentColor"/>'
-      : '<path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.41 1.41M13.36 13.36l1.42 1.42M3.22 14.78l1.41-1.41M13.36 4.64l1.42-1.42M12 9A3 3 0 1 1 6 9a3 3 0 0 1 6 0z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>';
-  }
-}
-
-// ===== MODALS =====
-function showUpgrade() { document.getElementById('upgrade-modal').style.display = 'flex'; }
-function closeModal() { document.getElementById('upgrade-modal').style.display = 'none'; }
-function selectPlan(plan) {
-  showToast(`${plan.toUpperCase()} ke liye Razorpay integrate karo!`);
-  closeModal();
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('meraai_theme', t);
+  const svg = document.getElementById('theme-svg');
+  if (!svg) return;
+  svg.innerHTML = t === 'dark'
+    ? '<path d="M2 9a7 7 0 0 1 9.95-6.37A5 5 0 1 0 9.95 15.37 7 7 0 0 1 2 9z" fill="currentColor"/>'
+    : '<path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.41 1.41M13.36 13.36l1.42 1.42M3.22 14.78l1.41-1.41M13.36 4.64l1.42-1.42M12 9A3 3 0 1 1 6 9a3 3 0 0 1 6 0z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>';
 }
 
+// ===== PROFILE =====
 function showProfile() {
-  document.getElementById('profile-name').value = currentUser.name;
-  document.getElementById('profile-email').value = currentUser.email;
-  document.getElementById('profile-api-key').value = anthropicKey;
-  document.getElementById('profile-groq-key').value = groqKey;
-  document.getElementById('profile-avatar-big').textContent = currentUser.name[0].toUpperCase();
+  document.getElementById('p-name').value = currentUser.name;
+  document.getElementById('p-email').value = currentUser.email;
+  document.getElementById('profile-av-big').textContent = currentUser.name[0].toUpperCase();
   document.getElementById('profile-modal').style.display = 'flex';
 }
-function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
+function closeProfile() { document.getElementById('profile-modal').style.display = 'none'; }
 function saveProfile() {
-  const name = document.getElementById('profile-name').value.trim();
-  const aKey = document.getElementById('profile-api-key').value.trim();
-  const gKey = document.getElementById('profile-groq-key').value.trim();
-  if (!name) { showToast('Naam daalo!'); return; }
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { toast('Naam daalo!'); return; }
   currentUser.name = name;
   localStorage.setItem('meraai_user', JSON.stringify(currentUser));
-  document.getElementById('user-name-display').textContent = name;
-  document.getElementById('user-avatar').textContent = name[0].toUpperCase();
-  if (aKey.startsWith('sk-')) { anthropicKey = aKey; localStorage.setItem('meraai_anthropic_key', aKey); }
-  if (gKey.startsWith('gsk_')) { groqKey = gKey; localStorage.setItem('meraai_groq_key', gKey); }
-  closeProfileModal();
-  showToast('Profile save ho gayi! ✅');
-  updateApiStatus();
+  document.getElementById('sidebar-av').textContent = name[0].toUpperCase();
+  document.getElementById('sidebar-name').textContent = name;
+  closeProfile();
+  toast('Profile save ho gayi! ✅');
 }
 
 // ===== UTILS =====
-function showToast(msg, duration = 3000) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
+function toast(msg) {
+  const ex = document.querySelector('.toast');
+  if (ex) ex.remove();
   const t = document.createElement('div');
   t.className = 'toast';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), duration);
+  setTimeout(() => t.remove(), 2800);
+}
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function escapeHtml(text) {
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ===== IMAGE GENERATION =====
+let imageMode = false;
+
+function toggleImageMode() {
+  imageMode = !imageMode;
+  const btn = document.getElementById('img-mode-btn');
+  const input = document.getElementById('msg-input');
+  if (imageMode) {
+    btn.style.background = 'var(--accent)';
+    btn.style.color = 'white';
+    input.placeholder = '🎨 Image describe karo — jaise "sunset over mountains"';
+  } else {
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--text2)';
+    input.placeholder = 'Kuch bhi poochho...';
+  }
 }
 
-function today() { return new Date().toISOString().split('T')[0]; }
+async function generateImage(prompt) {
+  const msgsEl = document.getElementById('messages');
 
-function updateMsgCountDisplay() {
-  const el = document.getElementById('msg-count-display');
-  if (el) el.textContent = `${msgCount}/${FREE_LIMIT} messages aaj`;
+  // User bubble
+  appendBubble('user', '🎨 Image: ' + prompt);
+
+  // Typing
+  isTyping = true;
+  document.getElementById('send-btn').disabled = true;
+  const typEl = showTyping();
+
+  try {
+    const res = await fetch('/api/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+    typEl.remove();
+
+    if (data.error) {
+      appendBubble('ai', '❌ ' + data.error);
+    } else {
+      // Image bubble
+      const div = document.createElement('div');
+      div.className = 'msg ai';
+      div.innerHTML = `
+        <div class="msg-av">AI</div>
+        <div>
+          <div class="bubble img-bubble">
+            <p style="font-size:12px;color:var(--text2);margin-bottom:8px">🎨 "${escHtml(prompt)}"</p>
+            <img src="${data.image}" alt="${escHtml(prompt)}"
+              style="width:100%;max-width:300px;border-radius:10px;display:block"
+              onerror="this.parentElement.innerHTML='❌ Image load nahi hui'"/>
+            <a href="${data.image}" download="meraai-image.jpg"
+              style="display:inline-block;margin-top:8px;font-size:12px;color:var(--accent2)">
+              ⬇️ Download karo
+            </a>
+          </div>
+          <div class="msg-time">${new Date().toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>`;
+      msgsEl.appendChild(div);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    }
+  } catch(e) {
+    typEl.remove();
+    appendBubble('ai', '❌ Image nahi bani — dobara try karo');
+  }
+
+  isTyping = false;
+  document.getElementById('send-btn').disabled = false;
 }

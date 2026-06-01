@@ -14,13 +14,12 @@ export default async function handler(req) {
     const { prompt } = await req.json();
     if (!prompt) return new Response(JSON.stringify({ error: 'Prompt required' }), { status: 400, headers });
 
-    // Pollinations AI — bilkul free, koi key nahi chahiye!
-    const encodedPrompt = encodeURIComponent(prompt);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true`;
+    // FLUX model — best quality, free!
+    const encodedPrompt = encodeURIComponent(prompt + ', highly detailed, professional, 4k quality');
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&width=768&height=768&nologo=true&enhance=true`;
 
-    // URL check karo
     const resp = await fetch(imageUrl);
-    if (!resp.ok) return new Response(JSON.stringify({ error: 'Image nahi bani' }), { status: 500, headers });
+    if (!resp.ok) return new Response(JSON.stringify({ error: 'Image nahi bani, dobara try karo' }), { status: 500, headers });
 
     const buf = await resp.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
@@ -30,4 +29,3 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
   }
 }
-
